@@ -1,34 +1,50 @@
-const refs = {
-  btnStart: document.querySelector('[data-start]'),
-  btnStop: document.querySelector('[data-stop]'),
-  body: document.querySelector('body'),
-};
+class ColorSwitcher {
+  constructor(width, height, className, delay) {
+    this.width = width;
+    this.height = height;
+    this.className = className;
+    this.intervalId = null;
+    this.delay = delay;
 
-let intervalId = null;
+    this.bodyEl = document.body;
+    this.markup = ` <div class="${this.className}">
+    <div style="width: ${this.width}px; height: ${this.height}px"></div>
+    <button type="button" data-start>Start</button>
+  <button type="button" data-stop>Stop</button>
+  </div>`;
+    this.bodyEl.insertAdjacentHTML('beforeend', this.markup);
 
-function getRandomHexColor() {
-  return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-}
+    this.divWrapper = document.querySelector(`.${this.className}`);
+    this.startBtn = this.divWrapper.querySelector('[data-start]');
+    this.stopBtn = this.divWrapper.querySelector('[data-stop]');
+    this.divColor = this.divWrapper.querySelector('div');
 
-refs.btnStart.addEventListener('click', onBodyColorChange);
-refs.btnStop.addEventListener('click', onBodyColorStop);
-
-function onBodyColorChange() {
-  if (refs.btnStart.hasAttribute('disabled')) {
-    console.warn('The function is already running');
-    return;
+    this.addListeners();
   }
-  intervalId = setInterval(() => {
-    refs.body.style.backgroundColor = getRandomHexColor();
-  }, 1000);
-  refs.btnStart.setAttribute('disabled', 'disabled');
-  refs.btnStop.removeAttribute('disabled');
-  console.log('The function is running');
+
+  getRandomHexColor() {
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  }
+
+  addListeners() {
+    this.startBtn.addEventListener('click', this.onBodyColorChange.bind(this));
+    this.stopBtn.addEventListener('click', this.onBodyColorStop.bind(this));
+    this.stopBtn.disabled = true;
+  }
+
+  onBodyColorChange() {
+    this.startBtn.disabled = true;
+    this.stopBtn.disabled = false;
+    this.intervalId = setInterval(() => {
+      this.divColor.style.backgroundColor = this.getRandomHexColor();
+    }, this.delay);
+  }
+
+  onBodyColorStop() {
+    this.stopBtn.disabled = true;
+    this.startBtn.disabled = false;
+    clearInterval(this.intervalId);
+  }
 }
 
-function onBodyColorStop() {
-  refs.btnStop.setAttribute('disabled', 'disabled');
-  refs.btnStart.removeAttribute('disabled');
-  clearInterval(intervalId);
-  console.log('The function is stopped');
-}
+const colorSwitcher = new ColorSwitcher(300, 100, 'wrapper', 1000);
