@@ -19,9 +19,7 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    const startTime = fp.selectedDates[0].getTime();
-    const currentTime = Date.now();
-    const dateIsWrong = currentTime > startTime;
+    const dateIsWrong = options.defaultDate > selectedDates[0];
     dateIsWrong
       ? Notiflix.Notify.failure('Please choose a date in the future')
       : (refs.startBtn.disabled = false);
