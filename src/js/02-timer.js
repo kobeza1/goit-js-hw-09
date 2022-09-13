@@ -11,6 +11,7 @@ const refs = {
   seconds: document.querySelector('[data-seconds]'),
 };
 refs.startBtn.disabled = true;
+let intervalId = null;
 
 const options = {
   enableTime: true,
@@ -30,13 +31,14 @@ refs.startBtn.addEventListener('click', timerStart);
 const fp = flatpickr(refs.input, options);
 
 function timerStart() {
+  clearInterval(intervalId);
   const startTime = fp.selectedDates[0].getTime();
 
-  setInterval(() => {
+  intervalId = setInterval(() => {
     const currentTime = Date.now();
     const deltaTime = startTime - currentTime;
     const timeComponents = convertMs(deltaTime);
-    clockFace(timeComponents);
+    deltaTime > 0 ? clockFace(timeComponents) : clearInterval(intervalId);
   }, 1000);
 }
 
